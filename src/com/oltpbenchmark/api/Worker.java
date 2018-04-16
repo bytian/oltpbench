@@ -572,11 +572,12 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
      *            TODO
      */
     public void tearDown(boolean error) {
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            LOG.warn("No connection to close");
-        }
+        return;
+//        try {
+//            conn.close();
+//        } catch (SQLException e) {
+//            LOG.warn("No connection to close");
+//        }
     }
 
     public void initializeState() {

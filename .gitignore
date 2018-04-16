@@ -24,3 +24,6 @@ target
 # Intelli J
 .idea/
 *.iml
+
+# execution result
+results/
