@@ -81,4 +81,10 @@ public class TPCCWorker extends Worker<TPCCBenchmark> {
         conn.commit();
         return (TransactionStatus.SUCCESS);
 	}
+
+	public final static String NewOrderTrx = "NewOrder";
+	public final static String PaymentTrx = "Payment";
+	public final static String OrderStatusTrx = "OrderStatus";
+	public final static String DeliveryTrx = "Delivery";
+	public final static String StockLevelTrx = "StockLevel";
 }
