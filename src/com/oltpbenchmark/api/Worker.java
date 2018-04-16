@@ -53,7 +53,7 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
 
     private final int id;
     private final T benchmarkModule;
-    protected final Connection conn;
+    protected final Connection conn = null;
     protected final WorkloadConfiguration wrkld;
     protected final TransactionTypes transactionTypes;
     protected final Map<TransactionType, Procedure> procedures = new HashMap<TransactionType, Procedure>();
@@ -77,19 +77,19 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
         this.transactionTypes = this.wrkld.getTransTypes();
         assert (this.transactionTypes != null) : "The TransactionTypes from the WorkloadConfiguration is null!";
 
-        try {
-            this.conn = this.benchmarkModule.makeConnection();
-            this.conn.setAutoCommit(false);
-            
-            // 2018-01-11: Since we want to support NoSQL systems 
-            // that do not support txns, we will not invoke certain JDBC functions
-            // that may cause an error in them.
-            if (this.wrkld.getDBType().shouldUseTransactions()) {
-                this.conn.setTransactionIsolation(this.wrkld.getIsolationMode());
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database", ex);
-        }
+        // try {
+        //     this.conn = this.benchmarkModule.makeConnection();
+        //     this.conn.setAutoCommit(false);
+        //
+        //     // 2018-01-11: Since we want to support NoSQL systems
+        //     // that do not support txns, we will not invoke certain JDBC functions
+        //     // that may cause an error in them.
+        //     if (this.wrkld.getDBType().shouldUseTransactions()) {
+        //         this.conn.setTransactionIsolation(this.wrkld.getIsolationMode());
+        //     }
+        // } catch (SQLException ex) {
+        //     throw new RuntimeException("Failed to connect to database", ex);
+        // }
 
         // Generate all the Procedures that we're going to need
         this.procedures.putAll(this.benchmarkModule.getProcedures());

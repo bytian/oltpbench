@@ -4,13 +4,13 @@ package com.oltpbenchmark.benchmarks.tpcc;
 import com.oltpbenchmark.benchmarks.tpcc.executioners.ExecThread;
 import com.oltpbenchmark.benchmarks.tpcc.executioners.Transaction;
 
-import java.util.HashMap;
+import java.util.HashSet;
 
 public abstract class TPCCExecutioner {
 
-    public void execute(String trx_type, HashMap<String, Integer> params) {
+    public void execute(String trxType, HashSet<String> readSet, HashSet<String> writeSet) {
 
-        Transaction trx = new Transaction(trx_type, params);
+        Transaction trx = new Transaction(trxType, readSet, writeSet);
 
         ExecThread execThread = getThread(trx);
 

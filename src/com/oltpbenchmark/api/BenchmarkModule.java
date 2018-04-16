@@ -117,12 +117,7 @@ public abstract class BenchmarkModule {
      * @throws SQLException
      */
     public final Connection makeConnection() throws SQLException {
-        Connection conn = DriverManager.getConnection(
-                workConf.getDBConnection(),
-                workConf.getDBUsername(),
-                workConf.getDBPassword());
-        Catalog.setSeparator(conn);
-        return (conn);
+        return null;
     }
 
     // --------------------------------------------------------------------------
@@ -151,7 +146,6 @@ public abstract class BenchmarkModule {
     protected abstract Loader<? extends BenchmarkModule> makeLoaderImpl(Connection conn) throws SQLException;
 
     /**
-     * @param txns
      * @return
      */
     protected abstract Package getProcedurePackageImpl();
@@ -178,8 +172,7 @@ public abstract class BenchmarkModule {
     /**
      * Return the URL handle to the DDL used to load the benchmark's database
      * schema.
-     * @param conn 
-     * @throws SQLException 
+     * @throws SQLException
      */
     public URL getDatabaseDDL(DatabaseType db_type) {
         String ddlNames[] = {
@@ -354,7 +347,6 @@ public abstract class BenchmarkModule {
     }
 
     /**
-     * @param DB_CONN
      * @throws SQLException
      */
     public final void clearDatabase() {
@@ -441,8 +433,6 @@ public abstract class BenchmarkModule {
 
     /**
      * Return a mapping from TransactionTypes to Procedure invocations
-     * @param txns
-     * @param pkg
      * @return
      */
     public Map<TransactionType, Procedure> getProcedures() {

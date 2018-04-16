@@ -10,65 +10,27 @@ public final class Transaction {
     public HashSet<String> writeSet = new HashSet<>();
     public int execTime;
 
-    public Transaction(String trx_type, HashMap<String, Integer> params) {
-        switch (trx_type) {
+    public Transaction(String trxType, HashSet<String> readSet, HashSet<String> writeSet) {
+        switch (trxType) {
             case TPCCWorker.NewOrderTrx:
-                readSet.add("W," + Integer.toString(params.get("W_ID")));
-                readSet.add("D," + Integer.toString(params.get("D_W_ID")) + ","
-                        + Integer.toString(params.get("D_ID")));
-                writeSet.add("D," + Integer.toString(params.get("D_W_ID")) + ","
-                        + Integer.toString(params.get("D_ID")));
-                readSet.add("C," + Integer.toString(params.get("C_W_ID")) + ","
-                        + Integer.toString(params.get("C_D_ID")) + ","
-                        + Integer.toString(params.get("C_ID")));
-                readSet.add("I," + Integer.toString(params.get("I_ID")));
-                readSet.add("S," + Integer.toString(params.get("S_I_ID")) + ","
-                        + Integer.toString(params.get("S_W_ID")));
-                writeSet.add("S," + Integer.toString(params.get("S_I_ID")) + ","
-                        + Integer.toString(params.get("S_W_ID")));
                 execTime = newOrderTime;
                 break;
             case TPCCWorker.PaymentTrx:
-                readSet.add("W," + Integer.toString(params.get("W_ID")));
-                writeSet.add("W," + Integer.toString(params.get("W_ID")));
-                readSet.add("D," + Integer.toString(params.get("D_W_ID")) + ","
-                        + Integer.toString(params.get("D_ID")));
-                if (params.containsKey("C_ID")) {
-                    readSet.add("C," + Integer.toString(params.get("C_W_ID")) + ","
-                            + Integer.toString(params.get("C_D_ID")) + ","
-                            + Integer.toString(params.get("C_ID")));
-                    writeSet.add("C," + Integer.toString(params.get("C_W_ID")) + ","
-                            + Integer.toString(params.get("C_D_ID")) + ","
-                            + Integer.toString(params.get("C_ID")));
-                }
                 execTime = paymentTime;
                 break;
             case TPCCWorker.OrderStatusTrx:
-                if (params.containsKey("C_ID")) {
-                    readSet.add("C," + Integer.toString(params.get("C_W_ID")) + ","
-                            + Integer.toString(params.get("C_D_ID")) + ","
-                            + Integer.toString(params.get("C_ID")));
-                }
                 execTime = orderStatusTime;
                 break;
             case TPCCWorker.DeliveryTrx:
-                readSet.add("O," + Integer.toString(params.get("O_W_ID")) + ","
-                        + Integer.toString(params.get("O_D_ID")) + ","
-                        + Integer.toString(params.get("O_ID")));
-                writeSet.add("O," + Integer.toString(params.get("O_W_ID")) + ","
-                        + Integer.toString(params.get("O_D_ID")) + ","
-                        + Integer.toString(params.get("O_ID")));
                 execTime = deliveryTime;
                 break;
             case TPCCWorker.StockLevelTrx:
-                readSet.add("D," + Integer.toString(params.get("D_W_ID")) + ","
-                        + Integer.toString(params.get("D_ID")));
-                readSet.add("S," + Integer.toString(params.get("S_I_ID")) + ","
-                        + Integer.toString(params.get("S_W_ID")));
                 execTime = stockLevelTime;
                 break;
 
         }
+        this.readSet = readSet;
+        this.writeSet = writeSet;
     }
 
     private final static int newOrderTime = 16;

@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.oltpbenchmark.benchmarks.tpcc.executioners.OCCExecutioner;
 import org.apache.log4j.Logger;
 
 
@@ -35,6 +36,9 @@ import com.oltpbenchmark.benchmarks.tpcc.procedures.NewOrder;
 import com.oltpbenchmark.types.DatabaseType;
 
 public class TPCCBenchmark extends BenchmarkModule {
+
+	public static TPCCExecutioner exec = new OCCExecutioner();
+
     private static final Logger LOG = Logger.getLogger(TPCCBenchmark.class);
 
 	public TPCCBenchmark(WorkloadConfiguration workConf) {
@@ -47,7 +51,6 @@ public class TPCCBenchmark extends BenchmarkModule {
 	}
 
 	/**
-	 * @param Bool
 	 */
 	@Override
 	protected List<Worker<? extends BenchmarkModule>> makeWorkersImpl(boolean verbose) throws IOException {
