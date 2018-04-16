@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.oltpbenchmark.benchmarks.tpcc.executioners.OCCExecutioner;
+import com.oltpbenchmark.benchmarks.tpcc.executioners.RRExecutioner;
 import org.apache.log4j.Logger;
 
 
@@ -37,7 +38,7 @@ import com.oltpbenchmark.types.DatabaseType;
 
 public class TPCCBenchmark extends BenchmarkModule {
 
-	public static TPCCExecutioner exec = new OCCExecutioner();
+	public static TPCCExecutioner exec = new RRExecutioner();
 
     private static final Logger LOG = Logger.getLogger(TPCCBenchmark.class);
 

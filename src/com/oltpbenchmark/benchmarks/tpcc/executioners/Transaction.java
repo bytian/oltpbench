@@ -2,12 +2,14 @@ package com.oltpbenchmark.benchmarks.tpcc.executioners;
 
 import com.oltpbenchmark.benchmarks.tpcc.TPCCWorker;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.HashMap;
 
 public final class Transaction {
-    public HashSet<String> readSet = new HashSet<String>();
-    public HashSet<String> writeSet = new HashSet<>();
+    public HashSet<String> readSet;
+    public HashSet<String> writeSet;
+    public HashMap<String, Timestamp> readTs = new HashMap<>();
     public int execTime;
 
     public Transaction(String trxType, HashSet<String> readSet, HashSet<String> writeSet) {

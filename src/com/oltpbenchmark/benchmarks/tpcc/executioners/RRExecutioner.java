@@ -8,14 +8,13 @@ import java.util.HashSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-// OCC for serializablility
-public class OCCExecutioner extends TPCCExecutioner {
+// Repeatable Read Execution
+public class RRExecutioner extends TPCCExecutioner {
+    private class RRThread extends ExecThread {
 
-    private class OCCThread extends ExecThread {
+        RRExecutioner exec;
 
-        OCCExecutioner exec;
-
-        public OCCThread(OCCExecutioner exec, Transaction trx) {
+        public RRThread(RRExecutioner exec, Transaction trx) {
             this.exec = exec;
             this.trx = trx;
         }
@@ -43,7 +42,7 @@ public class OCCExecutioner extends TPCCExecutioner {
 
     @Override
     protected ExecThread getThread(Transaction trx) {
-        return new OCCThread(this, trx);
+        return new RRExecutioner.RRThread(this, trx);
     }
 
 
@@ -74,24 +73,7 @@ public class OCCExecutioner extends TPCCExecutioner {
 
     public boolean validate(HashMap<String, Timestamp> readTs, HashSet<String> writeSet) {
 
-        tsLock.lock();
-
-        for (String obj : readTs.keySet()) {
-            if (ts.get(obj).after(readTs.get(obj))) {
-                tsLock.unlock();
-                return false;
-            }
-        }
-
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        for (String obj : writeSet) {
-            ts.put(obj, now);
-        }
-
-        tsLock.unlock();
-
         return true;
     }
-
 
 }
