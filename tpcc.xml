@@ -13,7 +13,7 @@
     <scalefactor>32</scalefactor>
     
     <!-- The workload -->
-    <terminals>200</terminals>
+    <terminals>320</terminals>
     <works>
         <!--
         <work>
