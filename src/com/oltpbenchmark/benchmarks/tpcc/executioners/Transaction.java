@@ -17,6 +17,7 @@ public final class Transaction {
     public HashMap<String, Timestamp> readTs = new HashMap<>();
     public int execTime;
     public boolean commit = false;
+    public boolean abort = false;
 
     public Transaction(String trxType, HashSet<String> readSet, HashSet<String> writeSet) {
 
