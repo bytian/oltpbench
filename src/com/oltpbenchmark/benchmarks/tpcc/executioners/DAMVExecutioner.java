@@ -8,13 +8,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class JanusExecutioner extends TPCCExecutioner {
+public class DAMVExecutioner extends TPCCExecutioner {
 
-    private class JanusThread extends ExecThread {
+    private class DAMVThread extends ExecThread {
 
-        JanusExecutioner exec;
+        DAMVExecutioner exec;
 
-        public JanusThread(JanusExecutioner exec, Transaction trx) {
+        public DAMVThread(DAMVExecutioner exec, Transaction trx) {
             this.exec = exec;
             this.trx = trx;
         }
@@ -75,7 +75,7 @@ public class JanusExecutioner extends TPCCExecutioner {
 
     @Override
     protected ExecThread getThread(Transaction trx) {
-        return new JanusThread(this, trx);
+        return new DAMVThread(this, trx);
     }
 
     public void register(Transaction trx) {
@@ -106,46 +106,12 @@ public class JanusExecutioner extends TPCCExecutioner {
             }
         }
 
-        for (String obj : trx.writeSet) {
-
-            ObjectStatus os;
-
-            if (status.containsKey(obj)) {
-                os = status.get(obj);
-            } else {
-                os = new ObjectStatus();
-                status.put(obj, os);
-            }
-
-            if (!os.reading.isEmpty()) { // register rw dependency
-
-                node.dep.addAll(os.reading);
-
-                for (Integer readTrxID : os.reading) {
-                    trxNode.get(readTrxID).toSignal.add(trx.trxID);
-                }
-            } else if (os.writing != null) { // register ww dependency
-                node.dep.add(os.writing.trxID);
-                trxNode.get(os.writing.trxID).toSignal.add(trx.trxID);
-            }
-        }
-
         // update object status
 
-        for (String obj : trx.readSet) {
-
-            ObjectStatus os = status.get(obj);
-
-            if (os.writing != null)
-                os.writing = null;
-            os.reading.add(trx.trxID);
-        }
-
         for (String obj : trx.writeSet) {
 
             ObjectStatus os = status.get(obj);
 
-            os.reading.clear();
             os.writing = trx;
         }
 

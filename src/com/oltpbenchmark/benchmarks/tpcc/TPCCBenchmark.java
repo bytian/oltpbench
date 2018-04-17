@@ -24,6 +24,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.oltpbenchmark.benchmarks.tpcc.executioners.DAMVExecutioner;
+import com.oltpbenchmark.benchmarks.tpcc.executioners.JanusExecutioner;
 import com.oltpbenchmark.benchmarks.tpcc.executioners.OCCExecutioner;
 import com.oltpbenchmark.benchmarks.tpcc.executioners.RRExecutioner;
 import org.apache.log4j.Logger;
@@ -38,7 +40,7 @@ import com.oltpbenchmark.types.DatabaseType;
 
 public class TPCCBenchmark extends BenchmarkModule {
 
-	public static TPCCExecutioner exec = new RRExecutioner();
+	public static TPCCExecutioner exec = new DAMVExecutioner();
 
     private static final Logger LOG = Logger.getLogger(TPCCBenchmark.class);
 

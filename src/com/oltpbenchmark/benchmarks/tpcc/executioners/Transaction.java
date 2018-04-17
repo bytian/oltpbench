@@ -5,14 +5,23 @@ import com.oltpbenchmark.benchmarks.tpcc.TPCCWorker;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class Transaction {
+
+    private static AtomicInteger trxCnt = new AtomicInteger(0);
+
+    public int trxID;
     public HashSet<String> readSet;
     public HashSet<String> writeSet;
     public HashMap<String, Timestamp> readTs = new HashMap<>();
     public int execTime;
+    public boolean commit = false;
 
     public Transaction(String trxType, HashSet<String> readSet, HashSet<String> writeSet) {
+
+        trxID = trxCnt.getAndIncrement();
+
         switch (trxType) {
             case TPCCWorker.NewOrderTrx:
                 execTime = newOrderTime;
