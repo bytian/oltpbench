@@ -681,6 +681,7 @@ public class DBWorkload {
             rs = new PrintStream(new File(nextName));
             LOG.info("Output Raw data into file: " + nextName);
             r.writeAllCSVAbsoluteTiming(activeTXTypes, rs);
+            LOG.info("Average Latency is " + Double.toString(r.avgLat) + "us");
 
             // Result Uploader Files
             if (ru != null) {

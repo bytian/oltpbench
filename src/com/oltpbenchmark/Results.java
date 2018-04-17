@@ -31,6 +31,7 @@ import com.oltpbenchmark.util.Histogram;
 import com.oltpbenchmark.util.StringUtil;
 
 public final class Results {
+    public double avgLat = 0.;
     public final long nanoSeconds;
     public final int measuredRequests;
     public final DistributionStatistics latencyDistribution;
@@ -181,7 +182,11 @@ public final class Results {
                 Integer.toString(s.phaseId),
             };
             out.println(StringUtil.join(",", row));
+
+            avgLat += s.latencyUs;
         }
+
+        avgLat /= latencySamples.size();
     }
 
 }

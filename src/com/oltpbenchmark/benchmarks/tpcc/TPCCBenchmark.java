@@ -37,7 +37,7 @@ import com.oltpbenchmark.types.DatabaseType;
 
 public class TPCCBenchmark extends BenchmarkModule {
 
-	public static TPCCExecutioner exec = new SSIExecutioner();
+	public static TPCCExecutioner exec = new OCCExecutioner();
 
     private static final Logger LOG = Logger.getLogger(TPCCBenchmark.class);
 
