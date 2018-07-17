@@ -22,9 +22,9 @@ public class RRExecutioner extends TPCCExecutioner {
         @Override
         public void run() {
 
-            while (true) {
+            // while (true) {
 
-                trx.readTs = exec.getReadTs(trx.readSet);
+                // trx.readTs = exec.getReadTs(trx.readSet);
 
                 try {
                     this.sleep(trx.execTime);
@@ -32,9 +32,9 @@ public class RRExecutioner extends TPCCExecutioner {
 
                 }
 
-                if (validate(trx.readTs, trx.writeSet))
-                    return;
-            }
+                // if (validate(trx.readTs, trx.writeSet))
+                //     return;
+            // }
 
         }
     }
