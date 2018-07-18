@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.oltpbenchmark.benchmarks.tpcc.TPCCBenchmark;
 import org.apache.log4j.Logger;
 
 import com.oltpbenchmark.api.SQLStmt;
@@ -37,40 +38,40 @@ public class OrderStatus extends TPCCProcedure {
 
 //    private static final Logger LOG = Logger.getLogger(OrderStatus.class);
 //
-//	public SQLStmt ordStatGetNewestOrdSQL = new SQLStmt(
-//	        "SELECT O_ID, O_CARRIER_ID, O_ENTRY_D " +
-//            "  FROM " + TPCCConstants.TABLENAME_OPENORDER +
-//            " WHERE O_W_ID = ? " +
-//            "   AND O_D_ID = ? " +
-//            "   AND O_C_ID = ? " +
-//            " ORDER BY O_ID DESC LIMIT 1");
-//
-//	public SQLStmt ordStatGetOrderLinesSQL = new SQLStmt(
-//	        "SELECT OL_I_ID, OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, OL_DELIVERY_D " +
-//            "  FROM " + TPCCConstants.TABLENAME_ORDERLINE +
-//            " WHERE OL_O_ID = ?" +
-//            "   AND OL_D_ID = ?" +
-//            "   AND OL_W_ID = ?");
-//
-//	public SQLStmt payGetCustSQL = new SQLStmt(
-//	        "SELECT C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, " +
-//            "       C_CITY, C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, " +
-//            "       C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
-//            "  FROM " + TPCCConstants.TABLENAME_CUSTOMER +
-//            " WHERE C_W_ID = ? " +
-//            "   AND C_D_ID = ? " +
-//            "   AND C_ID = ?");
-//
-//	public SQLStmt customerByNameSQL = new SQLStmt(
-//	        "SELECT C_FIRST, C_MIDDLE, C_ID, C_STREET_1, C_STREET_2, C_CITY, " +
-//            "       C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, " +
-//            "       C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
-//            "  FROM " + TPCCConstants.TABLENAME_CUSTOMER +
-//            " WHERE C_W_ID = ? " +
-//            "   AND C_D_ID = ? " +
-//            "   AND C_LAST = ? " +
-//            " ORDER BY C_FIRST");
-//
+	public SQLStmt ordStatGetNewestOrdSQL = new SQLStmt(
+	        "SELECT O_ID, O_CARRIER_ID, O_ENTRY_D " +
+            "  FROM " + TPCCConstants.TABLENAME_OPENORDER +
+            " WHERE O_W_ID = ? " +
+            "   AND O_D_ID = ? " +
+            "   AND O_C_ID = ? " +
+            " ORDER BY O_ID DESC LIMIT 1");
+
+	public SQLStmt ordStatGetOrderLinesSQL = new SQLStmt(
+	        "SELECT OL_I_ID, OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, OL_DELIVERY_D " +
+            "  FROM " + TPCCConstants.TABLENAME_ORDERLINE +
+            " WHERE OL_O_ID = ?" +
+            "   AND OL_D_ID = ?" +
+            "   AND OL_W_ID = ?");
+
+	public SQLStmt payGetCustSQL = new SQLStmt(
+	        "SELECT C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, " +
+            "       C_CITY, C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, " +
+            "       C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
+            "  FROM " + TPCCConstants.TABLENAME_CUSTOMER +
+            " WHERE C_W_ID = ? " +
+            "   AND C_D_ID = ? " +
+            "   AND C_ID = ?");
+
+	public SQLStmt customerByNameSQL = new SQLStmt(
+	        "SELECT C_FIRST, C_MIDDLE, C_ID, C_STREET_1, C_STREET_2, C_CITY, " +
+            "       C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, " +
+            "       C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
+            "  FROM " + TPCCConstants.TABLENAME_CUSTOMER +
+            " WHERE C_W_ID = ? " +
+            "   AND C_D_ID = ? " +
+            "   AND C_LAST = ? " +
+            " ORDER BY C_FIRST");
+
 //	private PreparedStatement ordStatGetNewestOrd = null;
 //	private PreparedStatement ordStatGetOrderLines = null;
 //	private PreparedStatement payGetCust = null;
@@ -85,9 +86,6 @@ public class OrderStatus extends TPCCProcedure {
 //        customerByName = this.getPreparedStatement(conn, customerByNameSQL);
 //        ordStatGetNewestOrd = this.getPreparedStatement(conn, ordStatGetNewestOrdSQL);
 //        ordStatGetOrderLines = this.getPreparedStatement(conn, ordStatGetOrderLinesSQL);
-
-        HashSet<String> readSet = new HashSet<String>();
-        HashSet<String> writeSet = new HashSet<String>();
 
         int d_id = TPCCUtil.randomNumber(terminalDistrictLowerID, terminalDistrictUpperID, gen);
         boolean c_by_name = false;
@@ -106,129 +104,53 @@ public class OrderStatus extends TPCCProcedure {
         Timestamp o_entry_d;
         ArrayList<String> orderLines = new ArrayList<String>();
 
-        if (!c_by_name) {
-            readSet.add("C," + Integer.toString(w_id) + ","
-                    + Integer.toString(d_id) + ","
-                    + Integer.toString(c_id));
+
+        String procedureString = "OrderStatus Transaction: \n";
+
+        Customer c;
+        if (c_by_name) {
+            procedureString += "\t" +
+                    "SELECT C_FIRST, C_MIDDLE, C_ID, C_STREET_1, C_STREET_2, C_CITY, " +
+                    "       C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, " +
+                    "       C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
+                    "  FROM " + TPCCConstants.TABLENAME_CUSTOMER +
+                    " WHERE C_W_ID = " + Integer.toString(w_id) +
+                    "   AND C_D_ID = " + Integer.toString(d_id) +
+                    "   AND C_LAST = " + c_last +
+                    " ORDER BY C_FIRST\n";
+        } else {
+            procedureString += "\t" +
+                    "SELECT C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, " +
+                    "       C_CITY, C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, " +
+                    "       C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
+                    "  FROM " + TPCCConstants.TABLENAME_CUSTOMER +
+                    " WHERE C_W_ID = " + Integer.toString(w_id) +
+                    "   AND C_D_ID = " + Integer.toString(d_id) +
+                    "   AND C_ID = " + Integer.toString(c_id) + "\n";
         }
 
-//        Customer c;
-//        if (c_by_name) {
-//            assert c_id <= 0;
-//            // TODO: This only needs c_balance, c_first, c_middle, c_id
-//            // only fetch those columns?
-//            c = getCustomerByName(w_id, d_id, c_last);
-//        } else {
-//            assert c_last == null;
-//            c = getCustomerById(w_id, d_id, c_id, conn);
-//        }
-//
-//        // find the newest order for the customer
-//        // retrieve the carrier & order date for the most recent order.
-//
-//        ordStatGetNewestOrd.setInt(1, w_id);
-//        ordStatGetNewestOrd.setInt(2, d_id);
-//        ordStatGetNewestOrd.setInt(3, c.c_id);
-//        if (trace) LOG.trace("ordStatGetNewestOrd START");
-//        ResultSet rs = ordStatGetNewestOrd.executeQuery();
-//        if (trace) LOG.trace("ordStatGetNewestOrd END");
-//
-//        if (!rs.next()) {
-//            String msg = String.format("No order records for CUSTOMER [C_W_ID=%d, C_D_ID=%d, C_ID=%d]",
-//                                       w_id, d_id, c.c_id);
-//            if (trace) LOG.warn(msg);
-//            throw new RuntimeException(msg);
-//        }
-//
-//        o_id = rs.getInt("O_ID");
-//        o_carrier_id = rs.getInt("O_CARRIER_ID");
-//        o_entry_d = rs.getTimestamp("O_ENTRY_D");
-//        rs.close();
-//
-//        // retrieve the order lines for the most recent order
-//        ordStatGetOrderLines.setInt(1, o_id);
-//        ordStatGetOrderLines.setInt(2, d_id);
-//        ordStatGetOrderLines.setInt(3, w_id);
-//        if (trace) LOG.trace("ordStatGetOrderLines START");
-//        rs = ordStatGetOrderLines.executeQuery();
-//        if (trace) LOG.trace("ordStatGetOrderLines END");
-//
-//        while (rs.next()) {
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("[");
-//            sb.append(rs.getLong("OL_SUPPLY_W_ID"));
-//            sb.append(" - ");
-//            sb.append(rs.getLong("OL_I_ID"));
-//            sb.append(" - ");
-//            sb.append(rs.getLong("OL_QUANTITY"));
-//            sb.append(" - ");
-//            sb.append(TPCCUtil.formattedDouble(rs.getDouble("OL_AMOUNT")));
-//            sb.append(" - ");
-//            if (rs.getTimestamp("OL_DELIVERY_D") != null)
-//                sb.append(rs.getTimestamp("OL_DELIVERY_D"));
-//            else
-//                sb.append("99-99-9999");
-//            sb.append("]");
-//            orderLines.add(sb.toString());
-//        }
-//        rs.close();
-//        rs = null;
-//
-//        // commit the transaction
-//        conn.commit();
-//
-//        if (orderLines.isEmpty()) {
-//            String msg = String.format("Order record had no order line items [C_W_ID=%d, C_D_ID=%d, C_ID=%d, O_ID=%d]",
-//                                       w_id, d_id, c.c_id, o_id);
-//            if (trace) LOG.warn(msg);
-//        }
-//
-//        if (trace) {
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("\n");
-//            sb.append("+-------------------------- ORDER-STATUS -------------------------+\n");
-//            sb.append(" Date: ");
-//            sb.append(TPCCUtil.getCurrentTime());
-//            sb.append("\n\n Warehouse: ");
-//            sb.append(w_id);
-//            sb.append("\n District:  ");
-//            sb.append(d_id);
-//            sb.append("\n\n Customer:  ");
-//            sb.append(c.c_id);
-//            sb.append("\n   Name:    ");
-//            sb.append(c.c_first);
-//            sb.append(" ");
-//            sb.append(c.c_middle);
-//            sb.append(" ");
-//            sb.append(c.c_last);
-//            sb.append("\n   Balance: ");
-//            sb.append(c.c_balance);
-//            sb.append("\n\n");
-//            if (o_id == -1) {
-//                sb.append(" Customer has no orders placed.\n");
-//            } else {
-//                sb.append(" Order-Number: ");
-//                sb.append(o_id);
-//                sb.append("\n    Entry-Date: ");
-//                sb.append(o_entry_d);
-//                sb.append("\n    Carrier-Number: ");
-//                sb.append(o_carrier_id);
-//                sb.append("\n\n");
-//                if (orderLines.size() != 0) {
-//                    sb.append(" [Supply_W - Item_ID - Qty - Amount - Delivery-Date]\n");
-//                    for (String orderLine : orderLines) {
-//                        sb.append(" ");
-//                        sb.append(orderLine);
-//                        sb.append("\n");
-//                    }
-//                } else {
-//                    LOG.trace(" This Order has no Order-Lines.\n");
-//                }
-//            }
-//            sb.append("+-----------------------------------------------------------------+\n\n");
-//            LOG.trace(sb.toString());
-//        }
-//
+        // find the newest order for the customer
+        // retrieve the carrier & order date for the most recent order.
+
+        String c_id_string = c_by_name ? "?" : Integer.toString(c_id);
+
+        procedureString += "\t" +
+                "SELECT O_ID, O_CARRIER_ID, O_ENTRY_D " +
+                "  FROM " + TPCCConstants.TABLENAME_OPENORDER +
+                " WHERE O_W_ID = " + Integer.toString(w_id) +
+                "   AND O_D_ID = " + Integer.toString(d_id) +
+                "   AND O_C_ID = " + c_id_string +
+                " ORDER BY O_ID DESC LIMIT 1\n";
+
+        procedureString += "\t" +
+                "SELECT OL_I_ID, OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, OL_DELIVERY_D " +
+                "  FROM " + TPCCConstants.TABLENAME_ORDERLINE +
+                " WHERE OL_O_ID = ?" +
+                "   AND OL_D_ID = " + Integer.toString(d_id) +
+                "   AND OL_W_ID = " + Integer.toString(w_id) + "\n";
+
+        TPCCBenchmark.exec.log(procedureString);
+
         return null;
     }
 
